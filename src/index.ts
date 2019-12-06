@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { readFileSync } from 'fs';
 import * as uuid from 'uuid';
 import * as yargs from 'yargs';

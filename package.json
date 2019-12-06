@@ -1,9 +1,10 @@
 {
   "name": "@kgarsjo/cloud-deploy",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Package and deploy cloud artifacts",
   "main": "dist/index.js",
   "bin": "dist/index.js",
+  "repository": "github:kgarsjo/cloud-deploy",
   "scripts": {
     "execute": "node dist/index.js",
     "build": "tsc",
@@ -23,5 +24,8 @@
     "@types/node": "^12.12.14",
     "@types/yargs": "^13.0.3",
     "typescript": "^3.7.3"
+  },
+  "publishConfig": {
+    "registry":"https://npm.pkg.github.com/"
   }
 }
