@@ -1,8 +1,9 @@
 {
-  "name": "cloud-deploy",
+  "name": "@kgarsjo/cloud-deploy",
   "version": "0.0.1",
   "description": "Package and deploy cloud artifacts",
   "main": "dist/index.js",
+  "bin": "dist/index.js",
   "scripts": {
     "execute": "node dist/index.js",
     "build": "tsc",
@@ -11,9 +12,14 @@
   "author": "kgarsjo",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.585.0",
+    "glob": "^7.1.6",
+    "jszip": "^3.2.2",
+    "uuid": "^3.3.3",
     "yargs": "^15.0.2"
   },
   "devDependencies": {
+    "@types/jszip": "^3.1.6",
     "@types/node": "^12.12.14",
     "@types/yargs": "^13.0.3",
     "typescript": "^3.7.3"
