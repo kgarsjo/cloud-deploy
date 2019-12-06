@@ -1,0 +1,21 @@
+{
+  "name": "cloud-deploy",
+  "version": "0.0.1",
+  "description": "Package and deploy cloud artifacts",
+  "main": "dist/index.js",
+  "scripts": {
+    "execute": "node dist/index.js",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kgarsjo",
+  "license": "MIT",
+  "dependencies": {
+    "yargs": "^15.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.14",
+    "@types/yargs": "^13.0.3",
+    "typescript": "^3.7.3"
+  }
+}
