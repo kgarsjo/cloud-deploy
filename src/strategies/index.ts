@@ -1,26 +1,13 @@
-import { Bundler, Deployer } from './aws-cfn/types';
-import awsCFNStrategy from './aws-cfn';
+import awsCFNDeployer from './aws-cfn';
 
-interface CloudDeployStrategy {
-    bundle: Bundler,
-    deploy: Deployer,
-}
+export type CloudDeployer = (...args: any[]) => Promise<any>;
 
-export type CloudDeployer = (CloudDeployerProps) => Promise<void>;
-
-const strategies: { [key: string]: CloudDeployStrategy } = {
-    'aws-cfn': awsCFNStrategy,
+const deployers: { [key: string]: CloudDeployer } = {
+    'aws-cfn': awsCFNDeployer,
 };
 
-const createDeployer = (strategy: CloudDeployStrategy) => async (props) => {
-    const { bundle,deploy } = strategy;
-    const bundledArtifacts = await bundle(props);
-    await deploy(bundledArtifacts, props);
-};
-
-export const getAvailableStrategies = (): string[] => Object.keys(strategies);
+export const getAvailableDeployers = (): string[] => Object.keys(deployers);
 
 export const getDeployerForStrategy = (strategyName: string): CloudDeployer => {
-    const strategy = strategies[strategyName];
-    return createDeployer(strategy);
+   return deployers[strategyName];
 };

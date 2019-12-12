@@ -6,13 +6,9 @@ export interface Artifact {
 export interface BundledArtifact extends Artifact {
     bucket: string,
     key: string,
-};
-
-export interface BundlerProps {
-    artifacts: Artifact[],
-    bucket: string,
-    executionID: string,
 }
+
+export interface DeployedArtifact extends Artifact {}
 
 export interface Stack {
     artifactNamesConsumed: string[],
@@ -22,15 +18,10 @@ export interface Stack {
     templatePath: string,
 }
 
-export interface DeployedArtifact extends Artifact {}
-
 export interface DeployerProps {
+    artifacts: Artifact[],
     bucket: string,
     executionID: string,
     region: string,
     stacks: Stack[],
 }
-
-export type Bundler = (BundlerProps) => Promise<BundledArtifact[]>;
-
-export type Deployer = (bundledArtifacts: BundledArtifact[], deployerProps: DeployerProps) => Promise<DeployedArtifact[]>;

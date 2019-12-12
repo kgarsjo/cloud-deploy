@@ -4,19 +4,19 @@ import { readFileSync } from 'fs';
 import * as uuid from 'uuid';
 import * as yargs from 'yargs';
 
-import { getAvailableStrategies, getDeployerForStrategy } from './strategies';
+import { getAvailableDeployers, getDeployerForStrategy } from './deployers';
 
 const argv = yargs
     .options({
         config: {
             alias: 'c',
             config: true,
-            configHandler: configPath => JSON.parse(readFileSync(configPath, 'utf-8')),
+            configHandler: (configPath: string) => JSON.parse(readFileSync(configPath, 'utf-8')),
             default: './deploy.config.json'
         },
         strategy: {
             alias: 's',
-            choices: getAvailableStrategies(),
+            choices: getAvailableDeployers(),
             demand: true,
             describe: 'Which packaging and deployment strategy to use',
         },

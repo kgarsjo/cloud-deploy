@@ -1,11 +1,11 @@
 import { CloudFormation, S3 } from 'aws-sdk';
-import { BundledArtifact, DeployerProps, Stack, Deployer } from './types';
+import { BundledArtifact, DeployerProps, Stack } from './types';
 import { readFileSync } from 'fs';
 
 const s3 = new S3();
 
 const fetchChangeSetType = async (cfn: CloudFormation, stack: Stack): Promise<string> => {
-    console.log(`Determing change set type for stack ${stack.name}`);
+    console.log(`Determining change set type for stack ${stack.name}`);
     return await cfn.describeStacks({ StackName: stack.name }).promise()
         .then(() => 'UPDATE')
         .catch(() => 'CREATE');
@@ -18,6 +18,7 @@ const convertToParametersArray = (parameterMap: { [key: string]: string }) => Ob
 
 const getArtifactParameters = (bundledArtifacts: BundledArtifact[], ) => bundledArtifacts.reduce(
     (artifactParameters, { name, bucket, key }) => ({
+        ...artifactParameters,
         [`${name}ArtifactBucket`]: bucket,
         [`${name}ArtifactKey`]: key,
     }),
@@ -54,7 +55,7 @@ const createAndExecuteChangeSet = async (cfn: CloudFormation, bundledArtifacts: 
     }).promise();
 };
 
-const createAndExecuteChangeSets: Deployer = async (bundledArtifacts: BundledArtifact[], props: DeployerProps) => {
+const createAndExecuteChangeSets = async (bundledArtifacts: BundledArtifact[], props: DeployerProps) => {
     const { region, stacks } = props;
     const cfn = new CloudFormation({ region });
     await Promise.all(
