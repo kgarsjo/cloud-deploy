@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 import { readFileSync } from 'fs';
+import { info } from './logger';
 import * as uuid from 'uuid';
 import * as yargs from 'yargs';
 
-import { getAvailableDeployers, getDeployerForStrategy } from './deployers';
+import { getAvailableDeployers, getDeployerForStrategy } from './deployer';
 
 const argv = yargs
     .options({
@@ -24,6 +25,7 @@ const argv = yargs
     .argv;
 
 const deploy = getDeployerForStrategy(argv.strategy);
+info(`Using strategy '${argv.strategy}'`);
 deploy({
     ...argv,
     executionID: uuid.v4(),

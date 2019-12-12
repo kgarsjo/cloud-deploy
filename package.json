@@ -14,12 +14,14 @@
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.585.0",
+    "chalk": "^3.0.0",
     "glob": "^7.1.6",
     "jszip": "^3.2.2",
     "uuid": "^3.3.3",
     "yargs": "^15.0.2"
   },
   "devDependencies": {
+    "@types/chalk": "^2.2.0",
     "@types/glob": "^7.1.1",
     "@types/jszip": "^3.1.6",
     "@types/node": "^12.12.14",

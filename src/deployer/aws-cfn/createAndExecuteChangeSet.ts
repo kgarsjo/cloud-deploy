@@ -1,11 +1,12 @@
 import { CloudFormation, S3 } from 'aws-sdk';
 import { BundledArtifact, DeployerProps, Stack } from './types';
+import { info } from '../../logger';
 import { readFileSync } from 'fs';
 
 const s3 = new S3();
 
 const fetchChangeSetType = async (cfn: CloudFormation, stack: Stack): Promise<string> => {
-    console.log(`Determining change set type for stack ${stack.name}`);
+    info(`Determining change set type for stack ${stack.name}`);
     return await cfn.describeStacks({ StackName: stack.name }).promise()
         .then(() => 'UPDATE')
         .catch(() => 'CREATE');
@@ -27,7 +28,7 @@ const getArtifactParameters = (bundledArtifacts: BundledArtifact[], ) => bundled
 
 
 const createAndExecuteChangeSet = async (cfn: CloudFormation, bundledArtifacts: BundledArtifact[], stack: Stack, props: DeployerProps) => {
-    console.log(`Creating and executing change set for stack named ${stack.name}`);
+    info(`Creating and executing change set for stack named ${stack.name}`);
 
     const key = `${stack.name}-${props.executionID}.template`;
     await s3.putObject({
