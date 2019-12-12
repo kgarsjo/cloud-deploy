@@ -20,12 +20,14 @@
     "yargs": "^15.0.2"
   },
   "devDependencies": {
+    "@types/glob": "^7.1.1",
     "@types/jszip": "^3.1.6",
     "@types/node": "^12.12.14",
+    "@types/uuid": "^3.4.6",
     "@types/yargs": "^13.0.3",
     "typescript": "^3.7.3"
   },
   "publishConfig": {
-    "registry":"https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com/"
   }
 }

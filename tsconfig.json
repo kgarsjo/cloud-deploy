@@ -1,6 +1,18 @@
 {
     "compilerOptions": {
+        "alwaysStrict": true,
+        "declaration": true,
+        "experimentalDecorators": true,
         "lib": ["DOM", "es2019"],
-        "outDir": "dist"
+        "module": "commonJS",
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "outDir": "dist",
+        "strict": true,
+        "strictNullChecks": true,
+        "target": "ES2019"
     }
 }
