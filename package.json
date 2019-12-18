@@ -1,6 +1,6 @@
 {
   "name": "@kgarsjo/cloud-deploy",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Package and deploy cloud artifacts",
   "main": "dist/index.js",
   "bin": "dist/index.js",
@@ -13,6 +13,7 @@
   "author": "kgarsjo",
   "license": "MIT",
   "dependencies": {
+    "ajv": "^6.10.2",
     "aws-sdk": "^2.585.0",
     "chalk": "^3.0.0",
     "glob": "^7.1.6",

@@ -26,9 +26,8 @@ const getArtifactParameters = (bundledArtifacts: BundledArtifact[], ) => bundled
     {},
 );
 
-
 const createAndExecuteChangeSet = async (cfn: CloudFormation, bundledArtifacts: BundledArtifact[], stack: Stack, props: DeployerProps) => {
-    info(`Creating and executing change set for stack named ${stack.name}`);
+    const { name: StackName } = stack;
 
     const key = `${stack.name}-${props.executionID}.template`;
     await s3.putObject({
@@ -37,23 +36,29 @@ const createAndExecuteChangeSet = async (cfn: CloudFormation, bundledArtifacts: 
         Key: key,
     }).promise();
     
-    const changeSetName = `${stack.name}-changeset-${props.executionID}`;
+    const ChangeSetName = `${stack.name}-changeset-${props.executionID}`;
+    info(`Creating Change Set "${ChangeSetName}"`);
     await cfn.createChangeSet({
-        StackName: stack.name,
+        StackName,
         TemplateURL: getS3URL(props.bucket, key, props.region),
         Capabilities: stack.capabilities,
         Parameters: convertToParametersArray({
             ...getArtifactParameters(bundledArtifacts.filter(({ name }) => stack.artifactNamesConsumed.includes(name))),
             ...stack.parameters,
         }),
-        ChangeSetName: changeSetName,
+        ChangeSetName,
         ChangeSetType: await fetchChangeSetType(cfn, stack),
-    }).promise();
+    }).promise()
+        .then(() => cfn.waitFor('changeSetCreateComplete', { ChangeSetName, StackName }).promise())
+        .catch(() => cfn.describeChangeSet({ ChangeSetName, StackName })
+            .promise()
+            .then(({ Status, StatusReason }) => {
+                throw new Error(`Unexpected ChangeSet status: ${Status}: ${StatusReason}`);
+            }));
 
-    await cfn.executeChangeSet({
-        ChangeSetName: changeSetName,
-        StackName: stack.name,
-    }).promise();
+    
+    info(`Executing Change Set "${ChangeSetName}"`);
+    await cfn.executeChangeSet({ ChangeSetName, StackName }).promise();
 };
 
 const createAndExecuteChangeSets = async (bundledArtifacts: BundledArtifact[], props: DeployerProps) => {
