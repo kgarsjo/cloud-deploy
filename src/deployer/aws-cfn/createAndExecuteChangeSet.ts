@@ -1,6 +1,6 @@
 import { CloudFormation, config, S3 } from 'aws-sdk';
 import { BundledArtifact, DeployerProps, Stack } from './types';
-import { error, info } from '../../logger';
+import { info, success } from '../../logger';
 import { readFileSync } from 'fs';
 
 const cfn = new CloudFormation();
@@ -33,7 +33,11 @@ interface CreateChangeSetProps {
     ChangeSetType: string,
     key: string,
 }
-const createChangeSet = async (bundledArtifacts: BundledArtifact[], stack: Stack, props: CreateChangeSetProps) => {
+enum CreateChangeSetStatus {
+    READY,
+    NO_CHANGE,
+}
+const createChangeSet = async (bundledArtifacts: BundledArtifact[], stack: Stack, props: CreateChangeSetProps): Promise<CreateChangeSetStatus> => {
     const { name: StackName } = stack;
     const { bucket, ChangeSetName, ChangeSetType, key } = props;
 
@@ -51,14 +55,18 @@ const createChangeSet = async (bundledArtifacts: BundledArtifact[], stack: Stack
             ChangeSetType,
         }).promise()
         await cfn.waitFor('changeSetCreateComplete', { ChangeSetName, StackName }).promise();
+        return CreateChangeSetStatus.READY;
     } catch ({ message: errorMessage }) {
-        if (errorMessage) error(errorMessage);
 
         const changeSetState = await cfn.describeChangeSet({ ChangeSetName, StackName }).promise()
             .catch(() => null);
-        if (!changeSetState) throw new Error('The change set was not created. This could be due to configuration errors for which artifacts a stack consumes. It also may be a bug in cloud-deploy');
+        if (!changeSetState) throw new Error(`The change set was not createddue to the following error: ${errorMessage}`);
         
-        const { Status, StatusReason } = changeSetState;
+        const { Status, StatusReason = '' } = changeSetState;
+        if (StatusReason.includes('The submitted information didn\'t contain changes')) {
+            success(`There are no changes for change set ${ChangeSetName}`);
+            return CreateChangeSetStatus.NO_CHANGE;
+        }
         throw new Error(`Unexpected ChangeSet status: ${Status}: ${StatusReason}`);
     }
         
@@ -78,15 +86,17 @@ const createAndExecuteChangeSet = async (bundledArtifacts: BundledArtifact[], st
         Key: key,
     }).promise();
 
-    await createChangeSet(bundledArtifacts, stack, {
+    const changeSetStatus = await createChangeSet(bundledArtifacts, stack, {
         bucket: props.bucket,
         ChangeSetName,
         ChangeSetType,
         key,
     });
     
-    info(`Executing Change Set "${ChangeSetName}"`);
-    await cfn.executeChangeSet({ ChangeSetName, StackName }).promise();
+    if (changeSetStatus === CreateChangeSetStatus.READY) {
+        info(`Executing Change Set "${ChangeSetName}"`);
+        await cfn.executeChangeSet({ ChangeSetName, StackName }).promise();
+    }
 };
 
 const createAndExecuteChangeSets = async (bundledArtifacts: BundledArtifact[], props: DeployerProps) => {
