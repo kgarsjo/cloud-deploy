@@ -18,7 +18,7 @@ const getS3URL = (bucket: string, key: string) => `http://s3.${config.region}.am
 const convertToParametersArray = (parameterMap: { [key: string]: string }) => Object.entries(parameterMap)
     .map(([ ParameterKey, ParameterValue ]) => ({ ParameterKey, ParameterValue }));
 
-const getArtifactParameters = (bundledArtifacts: BundledArtifact[], ) => bundledArtifacts.reduce(
+const getArtifactParameters = (bundledArtifacts: BundledArtifact[], ) =>bundledArtifacts.reduce(
     (artifactParameters, { name, bucket, key }) => ({
         ...artifactParameters,
         [`${name}ArtifactBucket`]: bucket,
@@ -40,17 +40,18 @@ enum CreateChangeSetStatus {
 const createChangeSet = async (bundledArtifacts: BundledArtifact[], stack: Stack, props: CreateChangeSetProps): Promise<CreateChangeSetStatus> => {
     const { name: StackName } = stack;
     const { bucket, ChangeSetName, ChangeSetType, key } = props;
+    const Parameters = convertToParametersArray({
+        ...getArtifactParameters(bundledArtifacts.filter(({ name }) => stack.artifactNamesConsumed.includes(name))),
+        ...stack.parameters,
+    });
 
-    info(`Creating Change Set "${ChangeSetName}"`);
+    info(`Creating Change Set "${ChangeSetName}" with parameters:\n${JSON.stringify(Parameters)}`);
     try {
         await cfn.createChangeSet({
             StackName,
             TemplateURL: getS3URL(bucket, key),
             Capabilities: stack.capabilities,
-            Parameters: convertToParametersArray({
-                ...getArtifactParameters(bundledArtifacts.filter(({ name }) => stack.artifactNamesConsumed.includes(name))),
-                ...stack.parameters,
-            }),
+            Parameters,
             ChangeSetName,
             ChangeSetType,
         }).promise()
