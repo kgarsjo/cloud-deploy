@@ -22,6 +22,5 @@ export interface DeployerProps {
     artifacts: Artifact[],
     bucket: string,
     executionID: string,
-    region: string,
     stacks: Stack[],
 }

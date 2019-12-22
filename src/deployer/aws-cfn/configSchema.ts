@@ -16,7 +16,6 @@ export default {
             }
         },
         bucket: { type: 'string' },
-        region: { type: 'string' },
         stacks: {
             type: 'array',
             items: {
@@ -38,5 +37,5 @@ export default {
             }
         }
     },
-    required: ['artifacts', 'bucket', 'region', 'stacks']
+    required: ['artifacts', 'bucket', 'stacks']
 };

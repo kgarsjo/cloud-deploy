@@ -1,5 +1,6 @@
 import * as awsCFN from './aws-cfn';
-import { error } from '../logger';
+import { error, warn } from '../logger';
+import { noop } from '../utils';
 
 type Deploy = (...args: any[]) => Promise<any>;
 export interface CloudDeployer {
@@ -11,16 +12,19 @@ const deployers: { [key: string]: CloudDeployer } = {
     'aws-cfn': awsCFN,
 };
 
-const logAndExit = (e: Error) => {
-    error(e);
-    process.exit(1);
-};
-
 export const getAvailableDeployers = (): string[] => Object.keys(deployers);
 
-export const getDeployerForStrategy = (strategyName: string): Deploy => async (...args: any[]) =>{
-    const { deploy, preflight } = deployers[strategyName];
-    return await preflight(...args)
-        .then(() => deploy(...args))
-        .catch(logAndExit);
+export const getDeployerForStrategy = (strategyName: string, dryRun?: boolean): Deploy => async (props: any) => {
+    const deployer = deployers[strategyName];
+    const deploy = dryRun ? noop : deployer.deploy;
+    const { preflight } = deployer;
+
+    if (dryRun) warn('Dry-running: no deployment will be done');
+    try {
+        const vettedProps = await preflight(props);
+        await deploy(vettedProps);
+    } catch (e) { 
+        error(e);
+        process.exit(1);;
+    }
 };

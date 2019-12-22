@@ -21,12 +21,10 @@ const argv = yargs
             demand: true,
             describe: 'Which packaging and deployment strategy to use',
         },
+        'dry-run': { boolean: true },
     })
     .argv;
 
-const deploy = getDeployerForStrategy(argv.strategy);
+const deploy = getDeployerForStrategy(argv.strategy, argv['dry-run']);
 info(`Using strategy '${argv.strategy}'`);
-deploy({
-    ...argv,
-    executionID: uuid.v4(),
-});
+deploy({ ...argv, executionID: uuid.v4() });
