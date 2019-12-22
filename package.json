@@ -1,6 +1,6 @@
 {
   "name": "@kgarsjo/cloud-deploy",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Package and deploy cloud artifacts",
   "main": "dist/index.js",
   "bin": "dist/index.js",
