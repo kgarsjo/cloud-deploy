@@ -1,6 +1,6 @@
 {
   "name": "@kgarsjo/cloud-deploy",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Package and deploy cloud artifacts",
   "main": "dist/index.js",
   "bin": "dist/index.js",
@@ -31,8 +31,5 @@
     "@types/uuid": "^3.4.6",
     "@types/yargs": "^13.0.3",
     "typescript": "^3.7.3"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
   }
 }
