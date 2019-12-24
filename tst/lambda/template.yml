@@ -25,6 +25,7 @@ Resources:
   TestLambdaWithRoot:
     Type: AWS::Lambda::Function
     Properties:
+      FunctionName: TestLambdaWithRoot
       Code:
         S3Bucket: !Ref TestLambdaWithRootArtifactBucket
         S3Key: !Ref TestLambdaWithRootArtifactKey
@@ -35,6 +36,7 @@ Resources:
   TestLambdaWithNoRoot:
     Type: AWS::Lambda::Function
     Properties:
+      FunctionName: TestLambdaWithNoRoot
       Code:
         S3Bucket: !Ref TestLambdaWithNoRootArtifactBucket
         S3Key: !Ref TestLambdaWithNoRootArtifactKey
