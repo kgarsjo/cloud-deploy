@@ -99,7 +99,7 @@ const createAndExecuteChangeSet = async (bundledArtifacts: BundledArtifact[], st
         await cfn.executeChangeSet({ ChangeSetName, StackName }).promise();
         await ((ChangeSetType === 'CREATE')
             ? cfn.waitFor('stackCreateComplete', { StackName })
-            : cfn.waitFor('stackUpdateComplete', { StackName }));
+            : cfn.waitFor('stackUpdateComplete', { StackName })).promise();
     }
 };
 
