@@ -11,8 +11,10 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "outDir": "dist",
+        "resolveJsonModule": true,
         "strict": true,
         "strictNullChecks": true,
         "target": "ES2019"
-    }
+    },
+    "exclude": ["tst"]
 }

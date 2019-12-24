@@ -8,9 +8,8 @@
   "repository": "github:kgarsjo/cloud-deploy",
   "scripts": {
     "build": "tsc",
-    "test": "npm run test:lambda",
-    "test:lambda": "AWS_REGION=us-west-2 node ./dist/index.js -c tst/lambda/deploy.json",
-    "test:unknown-artifacts-consumed": "AWS_REGION=us-west-2 node ./dist/index.js -c tst/unknown-artifacts-consumed/deploy.json"
+    "release": "npm install && npm run build",
+    "test": "jest"
   },
   "author": "kgarsjo",
   "license": "MIT",
@@ -26,10 +25,17 @@
   "devDependencies": {
     "@types/chalk": "^2.2.0",
     "@types/glob": "^7.1.1",
+    "@types/jest": "^24.0.24",
     "@types/jszip": "^3.1.6",
     "@types/node": "^12.12.14",
     "@types/uuid": "^3.4.6",
     "@types/yargs": "^13.0.3",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
     "typescript": "^3.7.3"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
   }
 }

@@ -11,7 +11,7 @@
             "patterns": ["./tst/lambda/lambda.js"]
         }
     ],
-    "bucket": "kgarsjo-cloud-deploy-bucket",
+    "bucket": "clouddeploy-build-output-bucket-483219000426",
     "stacks": [
         {
             "name": "TestLambdaStack",
