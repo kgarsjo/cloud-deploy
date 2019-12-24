@@ -11,7 +11,9 @@
             "patterns": ["./tst/lambda/lambda.js"]
         }
     ],
-    "bucket": "clouddeploy-build-output-bucket-483219000426",
+    "bucket": {
+        "name": "clouddeploy-build-output-bucket-483219000426"
+    },
     "stacks": [
         {
             "name": "TestLambdaStack",

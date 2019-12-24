@@ -16,5 +16,5 @@
         "strictNullChecks": true,
         "target": "ES2019"
     },
-    "exclude": ["tst"]
+    "exclude": ["dist", "tst"]
 }

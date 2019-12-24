@@ -1,27 +1,22 @@
-import { CloudFormation, config, S3 } from 'aws-sdk';
+import { cfn, getS3URL, s3, getBucketName } from './sdk';
 import { BundledArtifact, DeployerProps, Stack } from './types';
 import { info, success } from '../../logger';
 import { readFileSync } from 'fs';
 
-const cfn = new CloudFormation();
-const s3 = new S3();
-
-const fetchChangeSetType = async (cfn: CloudFormation, stack: Stack): Promise<string> => {
+const fetchChangeSetType = async (stack: Stack): Promise<string> => {
     info(`Determining change set type required for stack ${stack.name}`);
     return await cfn.describeStacks({ StackName: stack.name }).promise()
         .then(() => 'UPDATE')
         .catch(() => 'CREATE');
 };
 
-const getS3URL = (bucket: string, key: string) => `http://s3.${config.region}.amazonaws.com/${bucket}/${key}`;
-
 const convertToParametersArray = (parameterMap: { [key: string]: string }) => Object.entries(parameterMap)
     .map(([ ParameterKey, ParameterValue ]) => ({ ParameterKey, ParameterValue }));
 
 const getArtifactParameters = (bundledArtifacts: BundledArtifact[], ) =>bundledArtifacts.reduce(
-    (artifactParameters, { name, bucket, key }) => ({
+    (artifactParameters, { name, bucketName, key }) => ({
         ...artifactParameters,
-        [`${name}ArtifactBucket`]: bucket,
+        [`${name}ArtifactBucket`]: bucketName,
         [`${name}ArtifactKey`]: key,
     }),
     {},
@@ -76,19 +71,19 @@ const createChangeSet = async (bundledArtifacts: BundledArtifact[], stack: Stack
 const createAndExecuteChangeSet = async (bundledArtifacts: BundledArtifact[], stack: Stack, props: DeployerProps) => {
     const { name: StackName } = stack;
     const ChangeSetName = `${stack.name}-changeset-${props.executionID}`;
-    const ChangeSetType = await fetchChangeSetType(cfn, stack);
+    const ChangeSetType = await fetchChangeSetType(stack);
     const key = `${stack.name}-${props.executionID}.template`;
 
     info(`Preparing to deploy stack ${StackName} via operation ${ChangeSetType}`);
 
     await s3.putObject({
         Body: readFileSync(stack.templatePath,'utf-8'),
-        Bucket: props.bucket,
+        Bucket: await getBucketName(props.bucket),
         Key: key,
     }).promise();
 
     const changeSetStatus = await createChangeSet(bundledArtifacts, stack, {
-        bucket: props.bucket,
+        bucket: await getBucketName(props.bucket),
         ChangeSetName,
         ChangeSetType,
         key,

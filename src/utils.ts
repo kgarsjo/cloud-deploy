@@ -4,3 +4,8 @@ export const compose = <A> (...fns: Function[]) => (arg: A) => fns.reduceRight(
 );
 
 export const noop: (...args: any[]) => void = () => {};
+
+export const once = (fn: Function, result?: any) => (...args: any[]) => {
+    if (!result) result = fn(...args);
+    return result;
+}

@@ -10,6 +10,30 @@ const cfn = new CloudFormation({ region });
 const lambda = new Lambda({ region });
 
 describe('Integration tests', () => {
+    describe('bucket-from-export', () => {
+        beforeEach(() => {
+            execSync(`AWS_REGION=${region} node ./dist/index.js -c tst/bucket-from-export/deploy.json`, {
+                stdio: 'inherit',
+            });
+        });
+
+        it('should deploy a callable lambda', async () => {
+            const { Payload: result } = await lambda.invoke({
+                FunctionName: 'TestLambda',
+            }).promise();
+            expect(JSON.parse(result as string)).toEqual({ status: 'ok' });
+        });
+
+        afterEach(async () => {
+           await Promise.all(lambdaDeployConfig.stacks
+                .map((stack: any) => (stack.name as string))
+                .map((StackName: string) => cfn.deleteStack({ StackName }).promise()
+                    .then(() => cfn.waitFor('stackDeleteComplete', { StackName }))
+                    .catch(e => console.warn(e))
+           ))
+        });
+    });
+
     describe('lambda', () => {
         beforeEach(() => {
             execSync(`AWS_REGION=${region} node ./dist/index.js -c tst/lambda/deploy.json`, {
@@ -37,6 +61,19 @@ describe('Integration tests', () => {
                     .then(() => cfn.waitFor('stackDeleteComplete', { StackName }))
                     .catch(e => console.warn(e))
            ))
+        });
+    });
+
+    describe('unknown-bucket-export', () => {
+        it('should fail due to unknown bucket export name by the stack', () => {
+            try {
+                execSync(`AWS_REGION=${region} node ./dist/index.js -c tst/unknown-bucket-export/deploy.json`, {
+                    stdio: 'inherit',
+                });
+            } catch (e) {
+                return;
+            }
+            fail('Expected the invalid export name to result in command failure');
         });
     });
 
