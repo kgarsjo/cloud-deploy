@@ -1,12 +1,10 @@
 import { Artifact, BundledArtifact, DeployerProps } from "./types";
+import { getBucketName, s3 } from "./sdk";
 import * as  glob from 'glob';
 import { info } from '../../logger';
 import { isAbsolute, join } from 'path';
 import * as JSZip from 'jszip';
 import { lstatSync, readFileSync } from 'fs';
-import { S3 } from 'aws-sdk';
-
-const s3 = new S3();
 
 const getCwd = (path?: string): string => {
     if (!path) return process.cwd();
@@ -27,12 +25,13 @@ const createBundleZip = async ({ patterns, root }: Artifact): Promise<Buffer> =>
 const bundleArtifactAsZipToS3 = async (artifact: Artifact, props: DeployerProps): Promise<BundledArtifact> => {
     info(`Bundling artifact named ${artifact.name}`);
     const { bucket, executionID } = props;
+    const bucketName = await getBucketName(bucket);
     const zipBuffer = await createBundleZip(artifact);
 
     const key = `${artifact.name}-${executionID}.zip`;
-    info(`Uploading artifact named ${artifact.name} to s3://${bucket}/${key}`);
-    await s3.putObject({ Body: zipBuffer, Bucket:bucket, Key: key }).promise();
-    return { ...artifact, bucket, key };
+    info(`Uploading artifact named ${artifact.name} to s3://${bucketName}/${key}`);
+    await s3.putObject({ Body: zipBuffer, Bucket: bucketName, Key: key }).promise();
+    return { ...artifact, bucketName, key };
 }
 
 const bundleAsZipsToS3 = async (props: DeployerProps): Promise<BundledArtifact[]> => await Promise.all(

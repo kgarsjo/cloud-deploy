@@ -5,7 +5,7 @@ export interface Artifact {
 }
 
 export interface BundledArtifact extends Artifact {
-    bucket: string,
+    bucketName: string,
     key: string,
 }
 
@@ -19,9 +19,14 @@ export interface Stack {
     templatePath: string,
 }
 
+export type BucketDescription = {
+    fromExport?: string,
+    name?: string,
+}
+
 export interface DeployerProps {
     artifacts: Artifact[],
-    bucket: string,
+    bucket: BucketDescription,
     executionID: string,
     stacks: Stack[],
 }

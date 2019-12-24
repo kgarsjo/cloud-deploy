@@ -1,0 +1,22 @@
+{
+    "strategy": "aws-cfn",
+    "artifacts": [
+        {
+            "name": "TestLambda",
+            "root": "./tst/lambda",
+            "patterns": ["./lambda.js"]
+        }
+    ],
+    "bucket": {
+        "fromExport": "BuildOutputBucketName"
+    },
+    "stacks": [
+        {
+            "name": "BucketFromExportStack",
+            "artifactNamesConsumed": ["TestLambda"],
+            "capabilities": ["CAPABILITY_IAM"],
+            "parameters": {},
+            "templatePath": "./tst/bucket-from-export/template.yml"
+        }
+    ]
+}

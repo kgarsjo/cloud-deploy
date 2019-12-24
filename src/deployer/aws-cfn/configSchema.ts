@@ -7,6 +7,7 @@ export default {
                 type: 'object',
                 properties: {
                     name: { type: 'string' },
+                    root: { type: 'string' },
                     patterns: {
                         type: 'array',
                         items: { type: 'string' }
@@ -15,7 +16,17 @@ export default {
                 required: ['name', 'patterns']
             }
         },
-        bucket: { type: 'string' },
+        bucket: {
+            type: 'object',
+            properties: {
+                name: { type: 'string' },
+                fromExport: { type: 'string' },
+            },
+            oneOf: [
+                { required: ['name'] },
+                { required: ['fromExport'] },
+            ],
+        },
         stacks: {
             type: 'array',
             items: {

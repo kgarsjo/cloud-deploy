@@ -1,0 +1,30 @@
+---
+Parameters:
+  TestLambdaArtifactBucket:
+    Type: String
+  TestLambdaArtifactKey:
+    Type: String
+
+Resources:
+  TestLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: "sts:AssumeRole"
+          Effect: "allow"
+          Principal:
+            Service: "lambda.amazonaws.com"
+      ManagedPolicyArns:
+      - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"      
+
+  TestLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: TestLambda
+      Code:
+        S3Bucket: !Ref TestLambdaArtifactBucket
+        S3Key: !Ref TestLambdaArtifactKey
+      Handler: "lambda.handler"
+      Role: !GetAtt [TestLambdaRole, Arn]
+      Runtime: "nodejs12.x"
