@@ -1,21 +1,28 @@
 import { Artifact, BundledArtifact, DeployerProps } from "./types";
 import * as  glob from 'glob';
 import { info } from '../../logger';
+import { isAbsolute, join } from 'path';
 import * as JSZip from 'jszip';
 import { lstatSync, readFileSync } from 'fs';
 import { S3 } from 'aws-sdk';
 
 const s3 = new S3();
 
-const createBundleZip = async ({ patterns }: Artifact): Promise<Buffer> => (
-    await patterns.flatMap(pattern => glob.sync(pattern))
-        .filter(filePath => lstatSync(filePath).isFile())
+const getCwd = (path?: string): string => {
+    if (!path) return process.cwd();
+    return isAbsolute(path) ? path : join(process.cwd(), path);
+}
+
+const createBundleZip = async ({ patterns, root }: Artifact): Promise<Buffer> => {
+    const cwd = getCwd(root);
+    return await patterns.flatMap(pattern => glob.sync(pattern, { cwd }))
+        .map(artifactPath => ({ artifactPath, filePath: join(cwd, artifactPath) }))
+        .filter(({ filePath }) => lstatSync(filePath).isFile())
         .reduce(
-            (zip, filePath) => zip.file(filePath, readFileSync(filePath)),
+            (zip, { artifactPath, filePath }) => zip.file(artifactPath, readFileSync(filePath)),
             new JSZip(),
-        )
-        .generateAsync({ type: 'nodebuffer' })
-);
+        ).generateAsync({ type: 'nodebuffer' })
+};
 
 const bundleArtifactAsZipToS3 = async (artifact: Artifact, props: DeployerProps): Promise<BundledArtifact> => {
     info(`Bundling artifact named ${artifact.name}`);

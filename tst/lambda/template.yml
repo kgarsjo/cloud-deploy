@@ -1,0 +1,43 @@
+---
+Parameters:
+  TestLambdaWithRootArtifactBucket:
+    Type: String
+  TestLambdaWithRootArtifactKey:
+    Type: String
+  TestLambdaWithNoRootArtifactBucket:
+    Type: String
+  TestLambdaWithNoRootArtifactKey:
+    Type: String
+
+Resources:
+  TestLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: "sts:AssumeRole"
+          Effect: "allow"
+          Principal:
+            Service: "lambda.amazonaws.com"
+      ManagedPolicyArns:
+      - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"      
+
+  TestLambdaWithRoot:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: !Ref TestLambdaWithRootArtifactBucket
+        S3Key: !Ref TestLambdaWithRootArtifactKey
+      Handler: "lambda.handler"
+      Role: !GetAtt [TestLambdaRole, Arn]
+      Runtime: "nodejs12.x"
+
+  TestLambdaWithNoRoot:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: !Ref TestLambdaWithNoRootArtifactBucket
+        S3Key: !Ref TestLambdaWithNoRootArtifactKey
+      Handler: "tst/lambda/lambda.handler"
+      Role: !GetAtt [TestLambdaRole, Arn]
+      Runtime: "nodejs12.x"

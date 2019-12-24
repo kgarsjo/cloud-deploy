@@ -1,0 +1,24 @@
+{
+    "strategy": "aws-cfn",
+    "artifacts": [
+        {
+            "name": "TestLambdaWithRoot",
+            "root": "./tst/lambda",
+            "patterns": ["./lambda.js"]
+        },
+        {
+            "name": "TestLambdaWithNoRoot",
+            "patterns": ["./tst/lambda/lambda.js"]
+        }
+    ],
+    "bucket": "kgarsjo-cloud-deploy-bucket",
+    "stacks": [
+        {
+            "name": "TestLambdaStack",
+            "artifactNamesConsumed": ["TestLambdaWithRoot", "TestLambdaWithNoRoot"],
+            "capabilities": ["CAPABILITY_IAM"],
+            "parameters": {},
+            "templatePath": "./tst/lambda/template.yml"
+        }
+    ]
+}

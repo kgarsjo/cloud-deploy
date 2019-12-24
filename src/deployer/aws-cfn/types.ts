@@ -1,5 +1,6 @@
 export interface Artifact {
     name: string,
+    root: string,
     patterns: string[],
 }
 
