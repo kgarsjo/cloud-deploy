@@ -1,0 +1,14 @@
+{
+    "strategy": "aws-cfn",
+    "artifacts": [],
+    "bucket": "kgarsjo-cloud-deploy-bucket",
+    "stacks": [
+        {
+            "name": "TestLambdaStack",
+            "artifactNamesConsumed": ["NonexistentArtifact1", "NonexistentArtifact2"],
+            "capabilities": [],
+            "parameters": {},
+            "templatePath": "./tst/unknown-artiffacts-consumed/template.yml"
+        }
+    ]
+}

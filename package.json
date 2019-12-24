@@ -1,6 +1,6 @@
 {
   "name": "@kgarsjo/cloud-deploy",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Package and deploy cloud artifacts",
   "main": "dist/index.js",
   "bin": "dist/index.js",
@@ -9,7 +9,8 @@
   "scripts": {
     "build": "tsc",
     "test": "npm run test:lambda",
-    "test:lambda": "AWS_REGION=us-west-2 node ./dist/index.js -c tst/lambda/deploy.json"
+    "test:lambda": "AWS_REGION=us-west-2 node ./dist/index.js -c tst/lambda/deploy.json",
+    "test:unknown-artifacts-consumed": "AWS_REGION=us-west-2 node ./dist/index.js -c tst/unknown-artifacts-consumed/deploy.json"
   },
   "author": "kgarsjo",
   "license": "MIT",

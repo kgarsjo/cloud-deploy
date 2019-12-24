@@ -8,10 +8,19 @@ import { DeployerProps } from './types';
 const sts = new STS();
 const validate = new Ajv().compile(configSchema);
 
+const validateStacksArtifactsConsumed = ({ artifacts, stacks }: DeployerProps) => {
+    const artifactNames = artifacts.map(artifact => artifact.name);
+    const unknownArtifactsConsumed = stacks.flatMap(stack => stack.artifactNamesConsumed)
+        .filter(consumedArtifactName => !artifactNames.includes(consumedArtifactName));
+    if (unknownArtifactsConsumed.length) throw new Error(`Unknown artifact names: ${JSON.stringify(unknownArtifactsConsumed)}`);
+};
+
 const preflight = async (props: DeployerProps) => {
     if (!await validate(props)) {
         throw new Error(`Missing or invalid configuration: ${JSON.stringify(validate.errors)}`);
     }
+
+    validateStacksArtifactsConsumed(props);
 
     if (!config.region) {
         throw new Error('An AWS region must be specified\nEither set an AWS_REGION environment variable or set the AWS_SDK_LOAD_CONFIG enviornment variable to true to load regions from your AWS Configuration');
